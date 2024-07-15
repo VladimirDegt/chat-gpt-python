@@ -1,6 +1,7 @@
 import os
 from openai import OpenAI
 from pickle import dump, load
+from colorama import Fore
 
 API_KEY_PATH = 'secret_key.bin'
 
@@ -14,7 +15,7 @@ def get_api_key():
     else:
         while True:
             user_input = input("Введіть API KEY from OpenAI: ")
-            if len(user_input) == 56 and user_input.startswith("sk-"):
+            if user_input.startswith("sk-"):
                 api_key = user_input
                 with open(API_KEY_PATH, 'wb') as file:
                     dump(api_key, file)
@@ -37,13 +38,18 @@ def gpt_handler(client: OpenAI, user_input, prompt: str):
 def main():
     api_key = get_api_key()
     client = OpenAI(api_key=api_key)
-    prompt= "Уяви, що ти Джейсон Стетхем та дай відповідь на питання: {question}"
+    prompt= """Ти мій помічник з вивчення англійської мови. Я тобі буду писати текст на англійській мові, а ти
+     перевіряй граматику та якщо будуть помилки, то пиши виправлений текст англійською. Після кожного свого речення на англійській
+     надавай транскрипцію цього речення. Після цього задавай мені питання для підтримки бесіди.  {question}"""
+    print(f"{Fore.CYAN}Welcome to the assistant bot!{Fore.RESET}")
+    print(f"For exit can use commands: {Fore.GREEN}q, close, exit{Fore.RESET}")
+    print(f"{Fore.GREEN}[AI]: {Fore.RESET}Hi, Volodymyr! How was your day?")
     while True:
-        user_input = input("Введіть запит: ")
+        user_input = input(f"{Fore.BLUE}[I]: {Fore.RESET}")
         if user_input in ['q', 'close', 'exit']:
             break
         answer = gpt_handler(client=client, user_input=user_input, prompt=prompt)
-        print(answer)
+        print(f"{Fore.GREEN}[AI]: {Fore.RESET}{answer}")
     
 
 if __name__ == "__main__":
